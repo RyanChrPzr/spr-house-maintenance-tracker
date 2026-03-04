@@ -23,6 +23,17 @@ class AuthNotifier extends AsyncNotifier<void> {
     );
   }
 
+  /// Signs in an existing user with email and password.
+  ///
+  /// On success state becomes [AsyncData]; on failure [AsyncError] carries an
+  /// [AppException] that screens inspect to show inline errors.
+  Future<void> signIn(String email, String password) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(
+      () => ref.read(authRepositoryProvider).signIn(email, password),
+    );
+  }
+
   /// Creates a profile row for the currently logged-in user.
   ///
   /// Must only be called after a successful [register]; the current user must

@@ -1,6 +1,6 @@
 // integration_test/auth_test.dart
 //
-// ATDD RED PHASE — Story 0.3: User Login & Role-Based Navigation
+// ATDD GREEN PHASE — Story 0.3: User Login & Role-Based Navigation
 // Test IDs : 0.3-INT-001, 0.3-INT-002, 0.3-INT-003
 // Priority : P0 (INT-001, INT-002)  |  P1 (INT-003)
 // Level    : Integration
@@ -9,12 +9,6 @@
 //   flutter test integration_test/auth_test.dart \
 //     --dart-define=SUPABASE_URL=<test-url> \
 //     --dart-define=SUPABASE_ANON_KEY=<test-key>
-//
-// Tests are SKIPPED with `skip:` because the app is not yet implemented.
-// TDD cycle:
-//   RED   ← you are here
-//   GREEN → remove `skip:` after LoginScreen + go_router guards are implemented
-//   REFACTOR → keep tests green while improving code quality
 //
 // Key Flutter widget identifiers expected in the implementation:
 //   Key('email_field')         — TextField for email input
@@ -31,10 +25,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-
-// Production import — main.dart does not exist yet (RED phase).
-// Uncomment once the Flutter project is initialised:
-// import 'package:spr_house_maintenance_tracker/main.dart' as app;
+import 'package:spr_house_maintenance_tracker/main.dart' as app;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -68,25 +59,20 @@ void main() {
     '[P0] 0.3-INT-001: homeowner login navigates to homeowner dashboard',
     (WidgetTester tester) async {
       // Arrange — launch the full app
-      // app.main();  // ← uncomment once main.dart exists
-      // await tester.pumpAndSettle();
+      app.main();
+      await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // Pre-condition: login screen is visible
-      // expect(find.byKey(const Key('login_button')), findsOneWidget);
+      expect(find.byKey(const Key('login_button')), findsOneWidget);
 
       // Act — submit homeowner credentials
-      // await performLogin(tester, email: homeownerEmail, password: testPassword);
+      await performLogin(tester, email: homeownerEmail, password: testPassword);
 
       // Assert — homeowner dashboard rendered; vendor dashboard absent
-      // expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
-      // expect(find.byKey(const Key('vendor_dashboard')), findsNothing);
-      // expect(find.byKey(const Key('login_button')), findsNothing);
-
-      // RED phase stub — will fail once skip is removed and implementation absent
-      expect(true, isFalse,
-          reason: '0.3-INT-001 RED: HomeownerDashboardScreen not implemented');
+      expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
+      expect(find.byKey(const Key('vendor_dashboard')), findsNothing);
+      expect(find.byKey(const Key('login_button')), findsNothing);
     },
-    skip: true, // RED phase — LoginScreen, AuthNotifier, and go_router homeowner route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -97,22 +83,18 @@ void main() {
     '[P0] 0.3-INT-002: vendor login navigates to vendor dashboard',
     (WidgetTester tester) async {
       // Arrange
-      // app.main();
-      // await tester.pumpAndSettle();
-      // expect(find.byKey(const Key('login_button')), findsOneWidget);
+      app.main();
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+      expect(find.byKey(const Key('login_button')), findsOneWidget);
 
       // Act
-      // await performLogin(tester, email: vendorEmail, password: testPassword);
+      await performLogin(tester, email: vendorEmail, password: testPassword);
 
       // Assert — vendor dashboard rendered; homeowner dashboard absent
-      // expect(find.byKey(const Key('vendor_dashboard')), findsOneWidget);
-      // expect(find.byKey(const Key('homeowner_dashboard')), findsNothing);
-      // expect(find.byKey(const Key('login_button')), findsNothing);
-
-      expect(true, isFalse,
-          reason: '0.3-INT-002 RED: VendorDashboardScreen not implemented');
+      expect(find.byKey(const Key('vendor_dashboard')), findsOneWidget);
+      expect(find.byKey(const Key('homeowner_dashboard')), findsNothing);
+      expect(find.byKey(const Key('login_button')), findsNothing);
     },
-    skip: true, // RED phase — LoginScreen, AuthNotifier, and go_router vendor route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -134,23 +116,18 @@ void main() {
     '[P1] 0.3-INT-003: authenticated session persists across app relaunch',
     (WidgetTester tester) async {
       // Arrange — first launch, sign in as homeowner
-      // app.main();
-      // await tester.pumpAndSettle();
-      // await performLogin(tester, email: homeownerEmail, password: testPassword);
-      // expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
+      app.main();
+      await tester.pumpAndSettle(const Duration(seconds: 5));
+      await performLogin(tester, email: homeownerEmail, password: testPassword);
+      expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
 
       // Act — simulate relaunch by re-pumping the app without signing out
-      // await tester.pumpWidget(app.buildApp());  // re-creates widget tree
-      // await tester.pumpAndSettle();
+      await tester.pumpWidget(app.buildApp());
+      await tester.pumpAndSettle(const Duration(seconds: 5));
 
       // Assert — lands on dashboard; login screen not shown
-      // expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
-      // expect(find.byKey(const Key('login_button')), findsNothing);
-
-      expect(true, isFalse,
-          reason: '0.3-INT-003 RED: session persistence guard in go_router '
-              'not implemented yet');
+      expect(find.byKey(const Key('homeowner_dashboard')), findsOneWidget);
+      expect(find.byKey(const Key('login_button')), findsNothing);
     },
-    skip: true, // RED phase — go_router redirect guard (reads supabase.auth.currentSession) not implemented yet
   );
 }

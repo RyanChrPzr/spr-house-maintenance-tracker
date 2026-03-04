@@ -24,7 +24,6 @@
 //
 // Pre-conditions: homeowner logged in + property setup already completed.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -63,9 +62,11 @@ void main() {
       // expect(find.byKey(const Key('homeowner_tasks_screen')), findsOneWidget);
 
       expect(true, isFalse,
-          reason: '1.2-INT-001 RED: TaskTemplateSelectionScreen not yet implemented');
+          reason:
+              '1.2-INT-001 RED: TaskTemplateSelectionScreen not yet implemented');
     },
-    skip: true, // RED phase — TaskTemplateSelectionScreen + MaintenanceTemplateNotifier not yet implemented
+    skip:
+        true, // RED phase — TaskTemplateSelectionScreen + MaintenanceTemplateNotifier not yet implemented
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -86,9 +87,11 @@ void main() {
       // );
 
       expect(true, isFalse,
-          reason: '1.2-INT-002 RED: TaskTemplateSelectionScreen empty-selection '
+          reason:
+              '1.2-INT-002 RED: TaskTemplateSelectionScreen empty-selection '
               'guard not yet implemented');
     },
-    skip: true, // RED phase — TaskTemplateSelectionScreen validation prompt not yet implemented
+    skip:
+        true, // RED phase — TaskTemplateSelectionScreen validation prompt not yet implemented
   );
 }

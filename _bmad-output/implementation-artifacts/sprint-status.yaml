@@ -48,10 +48,10 @@ story_location: _bmad-output/implementation-artifacts
 
 development_status:
   # ─── Epic 0: Project Foundations & Authentication ───────────────────────────
-  epic-0: in-progress
+  epic-0: done
   0-1-flutter-project-initialisation-and-backend-infrastructure: review
   0-2-user-registration-and-role-selection: review
-  0-3-user-login-and-role-based-navigation: backlog
+  0-3-user-login-and-role-based-navigation: done
   epic-0-retrospective: optional
 
   # ─── Epic 1: Property Setup & Maintenance Schedule ──────────────────────────
