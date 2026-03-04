@@ -25,7 +25,6 @@
 // Pre-conditions: User logged in as homeowner with no property set up.
 // Seed: homeowner@setup.test.spr.ph / Test1234! (no property record)
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -62,7 +61,8 @@ void main() {
       expect(true, isFalse,
           reason: '1.1-INT-001 RED: PropertySetupScreen not yet implemented');
     },
-    skip: true, // RED phase — PropertySetupScreen + PropertyNotifier + go_router first-property redirect not implemented yet
+    skip:
+        true, // RED phase — PropertySetupScreen + PropertyNotifier + go_router first-property redirect not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -85,8 +85,10 @@ void main() {
       // expect(find.text('Please select a property type.'), findsOneWidget);
 
       expect(true, isFalse,
-          reason: '1.1-INT-002 RED: PropertySetupScreen validation not implemented');
+          reason:
+              '1.1-INT-002 RED: PropertySetupScreen validation not implemented');
     },
-    skip: true, // RED phase — PropertySetupScreen inline validation not implemented yet
+    skip:
+        true, // RED phase — PropertySetupScreen inline validation not implemented yet
   );
 }

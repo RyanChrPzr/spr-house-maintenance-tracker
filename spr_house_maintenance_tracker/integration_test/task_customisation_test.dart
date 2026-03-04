@@ -23,7 +23,6 @@
 //
 // Pre-conditions: homeowner logged in + at least one task in maintenance_tasks.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -66,7 +65,8 @@ void main() {
           reason: '1.3-INT-001 RED: TaskDetailScreen + RecurrenceInterval '
               'dropdown not yet implemented');
     },
-    skip: true, // RED phase — TaskDetailScreen + RecurrenceInterval dropdown not yet implemented
+    skip:
+        true, // RED phase — TaskDetailScreen + RecurrenceInterval dropdown not yet implemented
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -97,6 +97,7 @@ void main() {
           reason: '1.3-INT-002 RED: TaskDetailScreen save + list refresh '
               'not yet implemented');
     },
-    skip: true, // RED phase — TaskDetailScreen name/notes edit not yet implemented
+    skip:
+        true, // RED phase — TaskDetailScreen name/notes edit not yet implemented
   );
 }
