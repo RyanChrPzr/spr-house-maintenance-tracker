@@ -67,7 +67,6 @@ The booking lifecycle (Requested → Confirmed → In Progress → Completed) is
 - Flutter mobile app (iOS + Android), touch-first
 - Push notifications are a primary interaction surface — tapping a notification must land the user directly on the relevant screen
 - Camera access for photo uploads (maintenance logs, profile photos, QRPH codes)
-- GCash deep link as the payment exit point
 - No offline support — all operations require connectivity
 
 ### Effortless Interactions
@@ -82,7 +81,7 @@ The booking lifecycle (Requested → Confirmed → In Progress → Completed) is
 - Homeowner sees their Home Health Score at 100 for the first time
 - Vendor receives a booking notification within seconds of a request being submitted
 - Full end-to-end demo loop completes without confusion or dead ends
-- Homeowner successfully pays via GCash or QRPH scan after job completion
+- Homeowner successfully pays via QRPH scan after job completion
 
 ### Experience Principles
 
@@ -659,11 +658,8 @@ flowchart TD
     M --> N[Status: In Progress]
     N --> O[Vendor marks complete\nEnters final price]
     O --> P[Status: Completed\nPayment screen shown]
-    P --> Q{Payment method?}
-    Q -- QRPH --> R[Scan QR code]
-    Q -- GCash --> S[GCash deep link\nAmount pre-filled]
-    R --> T[Tap 'I've Paid']
-    S --> T
+    P --> Q[Scan vendor QRPH code]
+    Q --> T[Tap 'I've Paid']
     T --> U[Vendor notified\nJob record closed]
     U --> V([Journey Complete\nTask logged · Score updated])
 ```

@@ -67,7 +67,6 @@ and no-show suspension is the most complex functional component.
 
 ### Technical Constraints & Dependencies
 
-- GCash deep link scheme (`gcash://`) must be validated on both platforms before demo
 - No payment processing integration in scope
 - No geographic/location services in scope
 - Edge Functions runtime is Deno (TypeScript) — not Node.js
@@ -157,7 +156,7 @@ dependencies:
 **User Role Modeling:** Option C — `profiles` + `vendor_extensions`
 
 - `profiles (id, user_type: homeowner|vendor, name, phone, avatar_url)` — one row per user regardless of role; RLS uses `user_type` for routing
-- `vendor_extensions (id → profiles.id, services[], price_range_min, price_range_max, gcash_number, qrph_url, is_available, completed_jobs_count)` — exists only for vendor users; RLS restricts reads/writes to owner
+- `vendor_extensions (id → profiles.id, services[], price_range_min, price_range_max, qrph_url, is_available, completed_jobs_count)` — exists only for vendor users; RLS restricts reads/writes to owner
 
 Rationale: shared identity in one place, vendor-specific business data separate. Avoids nullable columns on homeowner rows.
 
@@ -594,8 +593,6 @@ User action (widget)
 **External Services:**
 - Supabase (PostgREST + Realtime + Storage + Auth): via `supabase_flutter`
 - Firebase Cloud Messaging: via `firebase_messaging` + `google-services.json` (Android) / `GoogleService-Info.plist` (iOS)
-- GCash deep link: `payment_screen.dart` — `url_launcher` package, `gcash://` scheme validated before demo
-
 ## Architecture Validation Results
 
 ### Coherence Validation ✅
@@ -623,7 +620,7 @@ All 18 user stories (H1–H9, V1–V9) have explicit architectural support. All 
 | V4 Price Range | `vendor_extensions.price_range_min/max` |
 | V5 Availability Toggle | `availability_toggle_widget.dart` + `is_available` flag |
 | V6 Earnings Dashboard | `earnings_screen.dart` + aggregated from `bookings` |
-| V7 QRPH + GCash | `qrph-codes/` bucket + `url_launcher` deep link |
+| V7 QRPH | `qrph-codes/` Supabase Storage bucket |
 | V8 Vendor Profile | `vendor_extensions` + PostgREST read |
 | V9 Final Price | `payment_screen.dart` + `bookings` final price update |
 
@@ -635,10 +632,7 @@ Added migration `010_create_fcm_tokens.sql`:
 `notification_repository.dart` upserts token on app launch after login.
 `dispatch-notification` Edge Function queries this table to find target device.
 
-**Gap 2 (Minor): Missing `url_launcher` package — RESOLVED**
-Added to pubspec.yaml: `url_launcher: ^6.x` — used in `payment_screen.dart` for GCash `gcash://` deep link (V7). Validate scheme on both platforms before demo.
-
-**Gap 3 (Minor): Booking cancellation state — NOTED**
+**Gap 2 (Minor): Booking cancellation state — NOTED**
 `bookings.status` valid values: `requested | confirmed | in_progress | completed | cancelled`.
 Homeowner may cancel when status = `requested` only (H8 AC). No additional table required — handled by status update in `booking_repository.dart`.
 
