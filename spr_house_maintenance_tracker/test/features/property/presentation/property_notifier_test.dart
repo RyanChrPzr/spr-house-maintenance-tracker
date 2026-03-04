@@ -19,7 +19,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/riverpod.dart';
 
 // ── Production imports (RED phase — do not exist yet) ────────────────────────
 // Uncomment once implemented:
@@ -89,8 +88,7 @@ void main() {
         verify(() => mockRepo.saveProperty(any())).called(1);
         verify(() => mockRepo.seedDefaultTasks('property-id-1', PropertyType.house)).called(1);
       },
-      skip: 'RED phase — PropertyNotifier not yet implemented; '
-          'remove skip: after lib/features/property/presentation/property_notifier.dart exists',
+      skip: true, // RED phase — PropertyNotifier not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -116,8 +114,7 @@ void main() {
         // Pass trivially — guard enforcement verified after implementation
         expect(true, isTrue);
       },
-      skip: 'RED phase — PropertyNotifier validation not yet implemented; '
-          'remove skip: after Story 1.1 implementation',
+      skip: true, // RED phase — PropertyNotifier validation not yet implemented
     );
   });
 
@@ -144,8 +141,7 @@ void main() {
         );
         verify(() => mockRepo.updateProperty('p1', any())).called(1);
       },
-      skip: 'RED phase — PropertyNotifier.updateProperty() not yet implemented; '
-          'remove skip: after Story 1.4 implementation',
+      skip: true, // RED phase — PropertyNotifier.updateProperty() not yet implemented
     );
   });
 }

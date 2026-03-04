@@ -25,7 +25,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/riverpod.dart';
 
 // ── Production imports (RED phase — do not exist yet) ────────────────────────
 // Uncomment once implemented:
@@ -120,8 +119,7 @@ void main() {
         expect(tasks.first.interval, RecurrenceInterval.quarterly);
         expect(tasks.last.interval, RecurrenceInterval.semiAnnual);
       },
-      skip: 'RED phase — MaintenanceTemplateNotifier not yet implemented; '
-          'remove skip: after lib/features/maintenance/presentation/ exists',
+      skip: true, // RED phase — MaintenanceTemplateNotifier not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -144,8 +142,7 @@ void main() {
         verifyNever(() => mockRepo.createTasks(any(), any()));
         expect(true, isTrue);
       },
-      skip: 'RED phase — MaintenanceTemplateNotifier empty-selection guard '
-          'not yet implemented',
+      skip: true, // RED phase — MaintenanceTemplateNotifier empty-selection guard not yet implemented
     );
   });
 }

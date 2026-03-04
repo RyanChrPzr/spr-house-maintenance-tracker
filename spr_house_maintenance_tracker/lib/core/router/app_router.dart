@@ -31,12 +31,14 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/homeowner',
       builder: (context, state) => const Scaffold(
+        key: Key('homeowner_dashboard'),
         body: Center(child: Text('Homeowner Dashboard — Epic 1')),
       ),
     ),
     GoRoute(
       path: '/vendor',
       builder: (context, state) => const Scaffold(
+        key: Key('vendor_onboarding'),
         body: Center(child: Text('Vendor Dashboard — Epic 4')),
       ),
     ),

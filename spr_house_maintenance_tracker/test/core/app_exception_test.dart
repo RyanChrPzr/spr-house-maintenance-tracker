@@ -59,8 +59,7 @@ void main() {
         expect(ex.code, 'DB_ERROR');
         expect(ex, isA<Exception>());
       },
-      skip: 'RED phase — lib/core/exceptions/app_exception.dart not yet created; '
-          'remove skip: after Story 0.1 implementation',
+      skip: true, // RED phase — lib/core/exceptions/app_exception.dart not yet created
     );
 
     test(
@@ -69,8 +68,7 @@ void main() {
         expect(AppConstants.calmBlue, const Color(0xFF2E6BC6));
         expect(AppConstants.trustBlue, const Color(0xFF1B3A6B));
       },
-      skip: 'RED phase — lib/core/app_constants.dart not yet created; '
-          'remove skip: after Story 0.1 implementation',
+      skip: true, // RED phase — lib/core/app_constants.dart not yet created
     );
   });
 }

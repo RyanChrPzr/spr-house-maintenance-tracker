@@ -17,7 +17,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:riverpod/riverpod.dart';
 
 // ── Production imports (RED phase — do not exist yet) ────────────────────────
 // Uncomment once implemented:
@@ -86,8 +85,7 @@ void main() {
           completes,
         );
       },
-      skip: 'RED phase — RegistrationNotifier not yet implemented; '
-          'remove skip: after lib/features/auth/presentation/registration_notifier.dart exists',
+      skip: true, // RED phase — RegistrationNotifier not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -125,8 +123,7 @@ void main() {
           'An account with this email already exists.',
         );
       },
-      skip: 'RED phase — RegistrationNotifier not yet implemented; '
-          'remove skip: after Story 0.2 implementation',
+      skip: true, // RED phase — RegistrationNotifier not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -151,8 +148,7 @@ void main() {
               password: any(named: 'password'),
             ));
       },
-      skip: 'RED phase — RegistrationNotifier validation logic not yet '
-          'implemented; remove skip: after Story 0.2 implementation',
+      skip: true, // RED phase — RegistrationNotifier validation logic not yet implemented
     );
   });
 }
