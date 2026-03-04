@@ -16,11 +16,13 @@ class _StubSupabaseClient extends Mock implements SupabaseClient {}
 class _FakeAuthRepository extends AuthRepository {
   _FakeAuthRepository({
     this.signUpError,
+    this.signInError,
     this.createProfileError,
     this.currentUser,
   }) : super(supabaseClient: _StubSupabaseClient());
 
   final AppException? signUpError;
+  final AppException? signInError;
   final AppException? createProfileError;
   final User? currentUser;
 
@@ -28,6 +30,11 @@ class _FakeAuthRepository extends AuthRepository {
   Future<AuthResponse> signUp(String email, String password) async {
     if (signUpError != null) throw signUpError!;
     return AuthResponse();
+  }
+
+  @override
+  Future<void> signIn(String email, String password) async {
+    if (signInError != null) throw signInError!;
   }
 
   @override
@@ -122,6 +129,65 @@ void main() {
       expect(state, isA<AsyncError<void>>());
       final appEx = (state as AsyncError<void>).error as AppException;
       expect(appEx.code, 'auth-error');
+    });
+  });
+
+  // ── 0.3-UNIT-001 ──────────────────────────────────────────────────────────
+  group('AuthNotifier.signIn', () {
+    test(
+      '[P1] 0.3-UNIT-001: incorrect credentials emit AsyncError with '
+      '"Incorrect email or password." message',
+      () async {
+        const error = AppException(
+          code: 'invalid-credentials',
+          message: 'Incorrect email or password.',
+        );
+        final container = _makeContainer(_FakeAuthRepository(signInError: error));
+        addTearDown(container.dispose);
+        await _awaitBuild(container);
+
+        final states = <AsyncValue<void>>[];
+        container.listen<AsyncValue<void>>(
+          authNotifierProvider,
+          (_, next) => states.add(next),
+        );
+
+        await container
+            .read(authNotifierProvider.notifier)
+            .signIn('wrong@example.com', 'wrongpassword');
+
+        expect(states, [
+          isA<AsyncLoading<void>>(),
+          isA<AsyncError<void>>(),
+        ]);
+
+        final asyncError = states.last as AsyncError<void>;
+        expect(asyncError.error, isA<AppException>());
+        final appEx = asyncError.error as AppException;
+        expect(appEx.code, 'invalid-credentials');
+        expect(appEx.message, 'Incorrect email or password.');
+      },
+    );
+
+    test('transitions to AsyncData on successful sign in', () async {
+      final container = _makeContainer(_FakeAuthRepository());
+      addTearDown(container.dispose);
+      await _awaitBuild(container);
+
+      final states = <AsyncValue<void>>[];
+      container.listen<AsyncValue<void>>(
+        authNotifierProvider,
+        (_, next) => states.add(next),
+      );
+
+      await container
+          .read(authNotifierProvider.notifier)
+          .signIn('homeowner@test.spr.ph', 'Test1234!');
+
+      expect(states, [
+        isA<AsyncLoading<void>>(),
+        isA<AsyncData<void>>(),
+      ]);
     });
   });
 

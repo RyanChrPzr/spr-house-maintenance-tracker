@@ -21,7 +21,6 @@
 //
 // Pre-conditions: homeowner logged in + existing property (type: house, age: 5).
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -57,8 +56,10 @@ void main() {
       // expect(find.text('Condo'), findsOneWidget);
 
       expect(true, isFalse,
-          reason: '1.4-INT-001 RED: Property settings edit screen not yet implemented');
+          reason:
+              '1.4-INT-001 RED: Property settings edit screen not yet implemented');
     },
-    skip: true, // RED phase — PropertySettingsScreen + PropertyNotifier.updateProperty() not yet implemented
+    skip:
+        true, // RED phase — PropertySettingsScreen + PropertyNotifier.updateProperty() not yet implemented
   );
 }
