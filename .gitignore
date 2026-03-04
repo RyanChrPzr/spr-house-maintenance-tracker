@@ -72,3 +72,38 @@ logs/
 .cache/
 dist/
 build/
+
+# =========================
+# Flutter
+# =========================
+**/android/local.properties
+**/android/.gradle/
+**/android/key.properties
+**/android/app/google-services.json
+**/ios/GoogleService-Info.plist
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Runner.xcworkspace/
+**/ios/Pods/
+**/ios/.symlinks/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/pubspec.lock
+**/*.g.dart
+**/*.freezed.dart
+**/build/
+
+# =========================
+# Supabase
+# =========================
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+
+# =========================
+# Firebase / Google Services (never commit)
+# =========================
+google-services.json
+GoogleService-Info.plist
+*.keystore
+*.jks
