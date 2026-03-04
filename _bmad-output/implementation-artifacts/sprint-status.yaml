@@ -70,10 +70,10 @@ development_status:
   epic-2-retrospective: optional
 
   # ─── Epic 4: Vendor Onboarding & Public Profile (before Epic 3) ─────────────
-  epic-4: backlog
-  4-1-vendor-fast-onboarding-flow: backlog
-  4-2-vendor-price-range-and-qrph-setup: backlog
-  4-3-vendor-public-profile-display: backlog
+  epic-4: done
+  4-1-vendor-fast-onboarding-flow: done
+  4-2-vendor-price-range-and-qrph-setup: done
+  4-3-vendor-public-profile-display: done
   epic-4-retrospective: optional
 
   # ─── Epic 3: Vendor Discovery & One-Tap Booking ─────────────────────────────

@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
+import '../../features/vendor/presentation/screens/vendor_onboarding_screen.dart';
+import '../../features/vendor/presentation/screens/vendor_profile_setup_screen.dart';
+import '../../features/booking/presentation/screens/vendor_profile_screen.dart';
 
 /// Application router — all route definitions live here.
 ///
@@ -36,10 +39,23 @@ final GoRouter appRouter = GoRouter(
       ),
     ),
     GoRoute(
+      path: '/homeowner/vendor/:vendorId',
+      builder: (context, state) => VendorProfileScreen(
+        vendorId: state.pathParameters['vendorId']!,
+      ),
+    ),
+    GoRoute(
       path: '/vendor',
+      builder: (context, state) => const VendorOnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/vendor/profile-setup',
+      builder: (context, state) => const VendorProfileSetupScreen(),
+    ),
+    GoRoute(
+      path: '/vendor/dashboard',
       builder: (context, state) => const Scaffold(
-        key: Key('vendor_onboarding'),
-        body: Center(child: Text('Vendor Dashboard — Epic 4')),
+        body: Center(child: Text('Vendor Dashboard — Story 5.x')),
       ),
     ),
   ],
