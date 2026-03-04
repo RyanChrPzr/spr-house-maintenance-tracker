@@ -65,8 +65,7 @@ void main() {
       expect(true, isFalse,
           reason: '1.2-INT-001 RED: TaskTemplateSelectionScreen not yet implemented');
     },
-    skip: 'RED phase — TaskTemplateSelectionScreen + MaintenanceTemplateNotifier '
-        'not yet implemented',
+    skip: true, // RED phase — TaskTemplateSelectionScreen + MaintenanceTemplateNotifier not yet implemented
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -90,6 +89,6 @@ void main() {
           reason: '1.2-INT-002 RED: TaskTemplateSelectionScreen empty-selection '
               'guard not yet implemented');
     },
-    skip: 'RED phase — TaskTemplateSelectionScreen validation prompt not yet implemented',
+    skip: true, // RED phase — TaskTemplateSelectionScreen validation prompt not yet implemented
   );
 }

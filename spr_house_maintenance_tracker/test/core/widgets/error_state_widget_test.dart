@@ -77,8 +77,7 @@ void main() {
         await tester.tap(find.text('Retry'));
         expect(retryCalled, isTrue);
       },
-      skip: 'RED phase — lib/core/widgets/error_state_widget.dart not yet created; '
-          'remove skip: after Story 0.1 implementation',
+      skip: true, // RED phase — lib/core/widgets/error_state_widget.dart not yet created
     );
   });
 }

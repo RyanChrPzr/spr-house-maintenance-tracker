@@ -59,7 +59,6 @@ void main() {
       expect(true, isFalse,
           reason: '1.4-INT-001 RED: Property settings edit screen not yet implemented');
     },
-    skip: 'RED phase — PropertySettingsScreen + PropertyNotifier.updateProperty() '
-        'not yet implemented',
+    skip: true, // RED phase — PropertySettingsScreen + PropertyNotifier.updateProperty() not yet implemented
   );
 }

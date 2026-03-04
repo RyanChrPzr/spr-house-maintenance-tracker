@@ -86,8 +86,7 @@ void main() {
       expect(true, isFalse,
           reason: '0.3-INT-001 RED: HomeownerDashboardScreen not implemented');
     },
-    skip: 'RED phase — LoginScreen, AuthNotifier, and go_router homeowner '
-        'route not implemented yet; remove skip: to enter GREEN phase',
+    skip: true, // RED phase — LoginScreen, AuthNotifier, and go_router homeowner route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -113,8 +112,7 @@ void main() {
       expect(true, isFalse,
           reason: '0.3-INT-002 RED: VendorDashboardScreen not implemented');
     },
-    skip: 'RED phase — LoginScreen, AuthNotifier, and go_router vendor '
-        'route not implemented yet; remove skip: to enter GREEN phase',
+    skip: true, // RED phase — LoginScreen, AuthNotifier, and go_router vendor route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -153,7 +151,6 @@ void main() {
           reason: '0.3-INT-003 RED: session persistence guard in go_router '
               'not implemented yet');
     },
-    skip: 'RED phase — go_router redirect guard (reads supabase.auth.currentSession) '
-        'not implemented yet; remove skip: to enter GREEN phase',
+    skip: true, // RED phase — go_router redirect guard (reads supabase.auth.currentSession) not implemented yet
   );
 }

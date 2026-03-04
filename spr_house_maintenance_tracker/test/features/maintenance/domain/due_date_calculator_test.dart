@@ -60,9 +60,7 @@ void main() {
         final next = calculateNextDueDate(from, RecurrenceInterval.monthly);
         expect(next, DateTime(2026, 2, 15));
       },
-      skip: 'RED phase — calculateNextDueDate() not yet in '
-          'lib/features/maintenance/domain/due_date_calculator.dart; '
-          'remove skip: after Story 1.3 implementation',
+      skip: true, // RED phase — calculateNextDueDate() not yet in lib/features/maintenance/domain/
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -76,7 +74,7 @@ void main() {
         final next = calculateNextDueDate(from, RecurrenceInterval.quarterly);
         expect(next, DateTime(2026, 4, 1));
       },
-      skip: 'RED phase — calculateNextDueDate() not yet implemented',
+      skip: true, // RED phase — calculateNextDueDate() not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -91,7 +89,7 @@ void main() {
             calculateNextDueDate(from, RecurrenceInterval.semiAnnual);
         expect(next, DateTime(2026, 7, 31));
       },
-      skip: 'RED phase — calculateNextDueDate() not yet implemented',
+      skip: true, // RED phase — calculateNextDueDate() not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -105,7 +103,7 @@ void main() {
         final next = calculateNextDueDate(from, RecurrenceInterval.annual);
         expect(next, DateTime(2027, 3, 4));
       },
-      skip: 'RED phase — calculateNextDueDate() not yet implemented',
+      skip: true, // RED phase — calculateNextDueDate() not yet implemented
     );
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -125,8 +123,7 @@ void main() {
         expect(next.month, 2);
         expect(next.day, lessThanOrEqualTo(29)); // clamp to Feb days
       },
-      skip: 'RED phase — edge-case clamping not yet implemented in '
-          'calculateNextDueDate()',
+      skip: true, // RED phase — edge-case clamping not yet implemented in calculateNextDueDate()
     );
   });
 }

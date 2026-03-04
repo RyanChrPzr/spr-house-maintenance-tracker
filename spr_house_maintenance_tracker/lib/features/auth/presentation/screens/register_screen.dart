@@ -22,6 +22,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   String? _emailError;
   String? _passwordError;
+  String? _registerError; // API-level error (e.g. duplicate email)
 
   @override
   void dispose() {
@@ -64,7 +65,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       if (next.hasError) {
         final err = next.error;
         if (err is AppException && err.code == 'user-already-exists') {
-          setState(() => _emailError = err.message);
+          setState(() => _registerError = err.message);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -95,6 +96,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           children: [
             const SizedBox(height: 24),
             TextField(
+              key: const Key('email_field'),
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               decoration: InputDecoration(
@@ -102,8 +104,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                 errorText: _emailError,
               ),
             ),
+            if (_registerError != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  _registerError!,
+                  key: const Key('register_error_text'),
+                  style: const TextStyle(color: AppConstants.statusError, fontSize: 12),
+                ),
+              ),
             const SizedBox(height: 16),
             TextField(
+              key: const Key('password_field'),
               controller: _passwordController,
               obscureText: true,
               decoration: InputDecoration(
@@ -113,6 +125,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
             ),
             const Spacer(),
             FilledButton(
+              key: const Key('register_button'),
               onPressed: isLoading ? null : _onRegisterPressed,
               child: isLoading
                   ? const CircularProgressIndicator.adaptive()

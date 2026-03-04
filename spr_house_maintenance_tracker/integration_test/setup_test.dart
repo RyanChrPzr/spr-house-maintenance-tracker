@@ -48,8 +48,7 @@ void main() {
         expect(true, isFalse,
             reason: '0.1-INT-001 RED: main.dart / LoginScreen not yet created');
       },
-      skip: 'RED phase — main.dart, Supabase init, and go_router skeleton not '
-          'yet created; remove skip: after Story 0.1 implementation',
+      skip: true, // RED phase — main.dart, Supabase init, and go_router skeleton not yet created
     );
   });
 }

@@ -62,8 +62,7 @@ void main() {
       expect(true, isFalse,
           reason: '1.1-INT-001 RED: PropertySetupScreen not yet implemented');
     },
-    skip: 'RED phase — PropertySetupScreen + PropertyNotifier + go_router '
-        'first-property redirect not implemented yet',
+    skip: true, // RED phase — PropertySetupScreen + PropertyNotifier + go_router first-property redirect not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -88,6 +87,6 @@ void main() {
       expect(true, isFalse,
           reason: '1.1-INT-002 RED: PropertySetupScreen validation not implemented');
     },
-    skip: 'RED phase — PropertySetupScreen inline validation not implemented yet',
+    skip: true, // RED phase — PropertySetupScreen inline validation not implemented yet
   );
 }

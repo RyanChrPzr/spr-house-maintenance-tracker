@@ -80,8 +80,7 @@ void main() {
       expect(true, isFalse,
           reason: '0.2-INT-001 RED: RegisterScreen / RoleSelectionScreen not implemented');
     },
-    skip: 'RED phase — RegisterScreen, RoleSelectionScreen, and homeowner '
-        'route not implemented yet',
+    skip: true, // RED phase — RegisterScreen, RoleSelectionScreen, and homeowner route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -104,8 +103,7 @@ void main() {
       expect(true, isFalse,
           reason: '0.2-INT-002 RED: VendorOnboardingScreen not implemented');
     },
-    skip: 'RED phase — RegisterScreen, RoleSelectionScreen, and vendor '
-        'onboarding route not implemented yet',
+    skip: true, // RED phase — RegisterScreen, RoleSelectionScreen, and vendor onboarding route not implemented yet
   );
 
   // ─────────────────────────────────────────────────────────────────────────
@@ -135,7 +133,6 @@ void main() {
       expect(true, isFalse,
           reason: '0.2-INT-003 RED: RegisterScreen inline error not implemented');
     },
-    skip: 'RED phase — RegistrationNotifier error handling + RegisterScreen '
-        'Key(register_error_text) not implemented yet',
+    skip: true, // RED phase — RegistrationNotifier error handling + RegisterScreen Key(register_error_text) not implemented yet
   );
 }

@@ -89,6 +89,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
             SizedBox(
               height: 48,
               child: FilledButton(
+                key: const Key('role_homeowner_button'),
                 onPressed: isAnyLoading ? null : () => _selectRole(AppConstants.userTypeHomeowner),
                 child: _homeownerLoading
                     ? const CircularProgressIndicator.adaptive()
@@ -99,6 +100,7 @@ class _RoleSelectionScreenState extends ConsumerState<RoleSelectionScreen> {
             SizedBox(
               height: 48,
               child: OutlinedButton(
+                key: const Key('role_vendor_button'),
                 onPressed: isAnyLoading ? null : () => _selectRole(AppConstants.userTypeVendor),
                 child: _vendorLoading
                     ? const CircularProgressIndicator.adaptive()
