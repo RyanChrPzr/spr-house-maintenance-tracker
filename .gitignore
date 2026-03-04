@@ -18,6 +18,8 @@
 .env.*
 *.local
 *.local.json
+local.settings.json
+statusline.ps1
 
 # =========================
 

@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPR House Maintenance Tracker — Design Directions</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #F0F2F5; color: #1C2230; }
+
+  /* Palette */
+  :root {
+    --navy:      #1B3A6B;
+    --blue:      #2E6BC6;
+    --blue-soft: #D6E4F7;
+    --bg:        #F8F9FB;
+    --surface:   #FFFFFF;
+    --divider:   #EEF0F4;
+    --text-sec:  #9BA3B2;
+    --text:      #1C2230;
+    --green:     #4CAF82;
+    --amber:     #F4A732;
+    --red:       #E05252;
+  }
+
+  header { background: var(--navy); color: #fff; padding: 24px 32px; }
+  header h1 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+  header p { font-size: 13px; opacity: 0.7; }
+
+  .tab-bar { display: flex; gap: 8px; padding: 20px 32px 0; background: var(--navy); flex-wrap: wrap; }
+  .tab { padding: 10px 20px; border-radius: 8px 8px 0 0; font-size: 13px; font-weight: 600; cursor: pointer; color: rgba(255,255,255,0.6); border: none; background: transparent; }
+  .tab.active { background: #F0F2F5; color: var(--navy); }
+
+  .content { padding: 32px; }
+
+  .direction-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 32px; margin-bottom: 48px; }
+
+  .direction-card { background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .direction-label { padding: 16px 20px; border-bottom: 1px solid var(--divider); }
+  .direction-label h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+  .direction-label p { font-size: 12px; color: var(--text-sec); }
+  .direction-label .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; margin-top: 6px; }
+  .badge-recommended { background: #D6F5E6; color: #1E7A4A; }
+  .badge-alt { background: var(--blue-soft); color: var(--blue); }
+
+  /* Phone frame */
+  .phone { width: 260px; margin: 0 auto; background: var(--bg); border-radius: 24px; overflow: hidden; border: 1px solid var(--divider); font-size: 11px; }
+
+  /* ── DIRECTION 1: Score-Hero Dashboard ── */
+  .d1-appbar { background: var(--navy); padding: 14px 16px 12px; color: #fff; display: flex; align-items: center; justify-content: space-between; }
+  .d1-appbar .title { font-size: 13px; font-weight: 700; }
+  .d1-appbar .avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .d1-score-card { background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); margin: 12px; border-radius: 16px; padding: 20px; color: #fff; text-align: center; }
+  .d1-score-num { font-size: 52px; font-weight: 800; line-height: 1; }
+  .d1-score-label { font-size: 11px; opacity: 0.8; margin-top: 4px; }
+  .d1-score-bar { background: rgba(255,255,255,0.2); border-radius: 4px; height: 4px; margin-top: 12px; }
+  .d1-score-bar-fill { background: var(--green); border-radius: 4px; height: 4px; width: 70%; }
+  .d1-section { padding: 0 12px 8px; }
+  .d1-section-title { font-size: 11px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .task-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; background: var(--surface); border-radius: 10px; margin-bottom: 6px; border-left: 3px solid transparent; }
+  .task-row.overdue { border-left-color: var(--red); }
+  .task-row.upcoming { border-left-color: var(--amber); }
+  .task-row.ok { border-left-color: var(--green); }
+  .task-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .task-info { flex: 1; }
+  .task-name { font-size: 11px; font-weight: 600; color: var(--text); }
+  .task-due { font-size: 10px; color: var(--text-sec); margin-top: 1px; }
+  .task-chip { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; flex-shrink: 0; }
+  .chip-red { background: #FDE8E8; color: var(--red); }
+  .chip-amber { background: #FEF3DC; color: #B07400; }
+  .chip-green { background: #E6F7EE; color: #1E7A4A; }
+  .d1-nav { display: flex; border-top: 1px solid var(--divider); background: var(--surface); }
+  .nav-item { flex: 1; padding: 8px 0 6px; display: flex; flex-direction: column; align-items: center; gap: 2px; font-size: 9px; font-weight: 600; color: var(--text-sec); cursor: pointer; }
+  .nav-item.active { color: var(--blue); }
+  .nav-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--blue); }
+  .nav-icon { font-size: 16px; }
+
+  /* ── DIRECTION 2: List-First Dashboard ── */
+  .d2-appbar { background: var(--surface); padding: 14px 16px; border-bottom: 1px solid var(--divider); display: flex; align-items: center; justify-content: space-between; }
+  .d2-appbar .title { font-size: 14px; font-weight: 800; color: var(--navy); }
+  .d2-score-row { display: flex; align-items: center; justify-content: space-between; margin: 10px 12px; background: var(--blue-soft); border-radius: 12px; padding: 10px 14px; }
+  .d2-score-left { display: flex; align-items: center; gap: 8px; }
+  .d2-score-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--blue); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; }
+  .d2-score-text { font-size: 11px; font-weight: 600; color: var(--navy); }
+  .d2-score-sub { font-size: 10px; color: var(--blue); }
+  .d2-filter { display: flex; gap: 6px; padding: 8px 12px; overflow-x: auto; }
+  .filter-chip { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 600; white-space: nowrap; border: 1px solid var(--divider); background: var(--surface); color: var(--text-sec); }
+  .filter-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+
+  /* ── DIRECTION 3: Vendor Browse — Airbnb Grid ── */
+  .d3-appbar { background: var(--navy); padding: 14px 16px 10px; color: #fff; }
+  .d3-appbar .title { font-size: 13px; font-weight: 700; }
+  .d3-appbar .sub { font-size: 10px; opacity: 0.7; margin-top: 1px; }
+  .d3-search { margin: 10px 12px 0; background: var(--surface); border-radius: 50px; padding: 8px 14px; display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--text-sec); }
+  .d3-chips { display: flex; gap: 6px; padding: 10px 12px; overflow-x: auto; }
+  .vendor-card { margin: 0 12px 10px; background: var(--surface); border-radius: 14px; overflow: hidden; border: 1px solid var(--divider); }
+  .vendor-card-photo { height: 80px; background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%); position: relative; display: flex; align-items: flex-end; padding: 8px; }
+  .vendor-avail-badge { position: absolute; top: 8px; right: 8px; padding: 3px 8px; border-radius: 20px; font-size: 9px; font-weight: 700; }
+  .badge-avail { background: var(--green); color: #fff; }
+  .badge-unavail { background: var(--text-sec); color: #fff; }
+  .vendor-card-body { padding: 10px 12px; display: flex; align-items: flex-start; justify-content: space-between; }
+  .vendor-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .vendor-services { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
+  .vendor-jobs { font-size: 10px; color: var(--green); margin-top: 2px; }
+  .vendor-price { text-align: right; }
+  .vendor-price-range { font-size: 11px; font-weight: 700; color: var(--navy); }
+  .vendor-price-label { font-size: 9px; color: var(--text-sec); }
+  .book-btn { margin: 0 12px 12px; background: var(--blue); color: #fff; border: none; border-radius: 10px; padding: 10px; width: calc(100% - 24px); font-size: 11px; font-weight: 700; cursor: pointer; }
+  .book-btn.disabled { background: var(--divider); color: var(--text-sec); }
+
+  /* ── DIRECTION 4: Vendor Profile ── */
+  .d4-hero { height: 110px; background: linear-gradient(135deg, var(--blue) 0%, var(--navy) 100%); position: relative; }
+  .d4-avatar { width: 56px; height: 56px; border-radius: 50%; background: var(--green); border: 3px solid #fff; position: absolute; bottom: -28px; left: 16px; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #fff; }
+  .d4-back { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.3); border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 14px; }
+  .d4-body { padding: 36px 16px 12px; }
+  .d4-name { font-size: 15px; font-weight: 800; color: var(--text); }
+  .d4-services { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+  .d4-stats { display: flex; gap: 12px; margin-top: 12px; }
+  .d4-stat { text-align: center; flex: 1; background: var(--bg); border-radius: 10px; padding: 8px; }
+  .d4-stat-num { font-size: 14px; font-weight: 800; color: var(--navy); }
+  .d4-stat-label { font-size: 9px; color: var(--text-sec); margin-top: 2px; }
+  .d4-price-section { margin-top: 12px; padding: 10px 12px; background: var(--blue-soft); border-radius: 10px; }
+  .d4-price-title { font-size: 10px; font-weight: 700; color: var(--navy); }
+  .d4-price-val { font-size: 13px; font-weight: 800; color: var(--blue); margin-top: 2px; }
+  .d4-cta { margin: 12px; background: var(--blue); color: #fff; border: none; border-radius: 12px; padding: 14px; width: calc(100% - 24px); font-size: 13px; font-weight: 700; cursor: pointer; }
+
+  /* ── DIRECTION 5: Vendor Dashboard ── */
+  .d5-appbar { background: var(--navy); padding: 14px 16px; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+  .d5-appbar .greeting { font-size: 10px; opacity: 0.7; }
+  .d5-appbar .name { font-size: 14px; font-weight: 800; }
+  .d5-toggle { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.15); border-radius: 20px; padding: 6px 12px; }
+  .d5-toggle-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .d5-toggle-label { font-size: 10px; font-weight: 700; color: #fff; }
+  .d5-earnings { margin: 12px; background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 100%); border-radius: 16px; padding: 16px; color: #fff; }
+  .d5-earn-label { font-size: 10px; opacity: 0.8; }
+  .d5-earn-num { font-size: 28px; font-weight: 800; margin: 4px 0; }
+  .d5-earn-sub { font-size: 10px; opacity: 0.7; }
+  .d5-earn-row { display: flex; gap: 8px; margin-top: 12px; }
+  .d5-earn-stat { flex: 1; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 8px; text-align: center; }
+  .d5-earn-stat-num { font-size: 13px; font-weight: 800; }
+  .d5-earn-stat-label { font-size: 9px; opacity: 0.75; margin-top: 2px; }
+  .d5-booking { margin: 0 12px 8px; background: var(--surface); border-radius: 12px; padding: 12px; border-left: 3px solid var(--amber); }
+  .d5-booking-header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .d5-booking-service { font-size: 12px; font-weight: 700; color: var(--text); }
+  .d5-booking-date { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
+  .d5-booking-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .btn-accept { flex: 1; background: var(--green); color: #fff; border: none; border-radius: 8px; padding: 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
+  .btn-decline { flex: 1; background: var(--divider); color: var(--text-sec); border: none; border-radius: 8px; padding: 8px; font-size: 10px; font-weight: 700; cursor: pointer; }
+
+  /* ── DIRECTION 6: Booking Status Tracker ── */
+  .d6-appbar { background: var(--navy); padding: 14px 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
+  .d6-appbar .title { font-size: 13px; font-weight: 700; }
+  .d6-vendor-row { display: flex; align-items: center; gap: 10px; padding: 12px 16px; background: var(--surface); border-bottom: 1px solid var(--divider); }
+  .d6-vendor-photo { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--navy)); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 14px; }
+  .d6-vendor-name { font-size: 12px; font-weight: 700; color: var(--text); }
+  .d6-vendor-service { font-size: 10px; color: var(--text-sec); }
+  .d6-stepper { padding: 16px; }
+  .step-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 4px; }
+  .step-icon-col { display: flex; flex-direction: column; align-items: center; width: 24px; }
+  .step-circle { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .step-done { background: var(--green); color: #fff; }
+  .step-active { background: var(--blue); color: #fff; }
+  .step-pending { background: var(--divider); color: var(--text-sec); }
+  .step-line { width: 2px; height: 20px; background: var(--divider); margin: 2px 0; }
+  .step-line.done { background: var(--green); }
+  .step-content { padding-top: 4px; }
+  .step-label { font-size: 11px; font-weight: 700; color: var(--text); }
+  .step-sublabel { font-size: 10px; color: var(--text-sec); margin-top: 1px; }
+  .d6-action { margin: 8px 16px; background: var(--blue); color: #fff; border: none; border-radius: 12px; padding: 12px; width: calc(100% - 32px); font-size: 11px; font-weight: 700; cursor: pointer; }
+  .d6-noshow { margin: 4px 16px 12px; background: var(--surface); color: var(--red); border: 1px solid var(--red); border-radius: 12px; padding: 10px; width: calc(100% - 32px); font-size: 11px; font-weight: 700; cursor: pointer; }
+
+  /* Page padding for phone */
+  .phone-pad { padding: 12px; }
+
+  .section-title { font-size: 18px; font-weight: 800; color: var(--navy); margin-bottom: 6px; }
+  .section-desc { font-size: 13px; color: #6B7280; margin-bottom: 24px; }
+
+  .chosen-banner { background: linear-gradient(135deg, var(--navy), var(--blue)); color: #fff; border-radius: 16px; padding: 20px 24px; margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+  .chosen-banner .icon { font-size: 32px; }
+  .chosen-banner h2 { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .chosen-banner p { font-size: 13px; opacity: 0.85; }
+
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>SPR House Maintenance Tracker</h1>
+  <p>UX Design Directions — Explore & Compare · Calm & Trustworthy Palette</p>
+</header>
+
+<div class="tab-bar">
+  <button class="tab active" onclick="showTab('homeowner')">🏠 Homeowner Screens</button>
+  <button class="tab" onclick="showTab('vendor')">🔧 Vendor Screens</button>
+  <button class="tab" onclick="showTab('booking')">📋 Booking Flow</button>
+</div>
+
+<!-- HOMEOWNER SCREENS -->
+<div class="content" id="tab-homeowner">
+
+  <div class="chosen-banner">
+    <div class="icon">✅</div>
+    <div>
+      <h2>Direction Chosen: Score-Hero + List-Compact Hybrid</h2>
+      <p>Large Health Score card at top (Direction 1), compact colour-coded task list below (Direction 2). Matches ClickUp dashboard pattern + Airbnb card aesthetic.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Direction 1 — Score Hero Dashboard</div>
+  <div class="section-desc">Health Score is the centrepiece. Gradient card, large number, task list below with colour-coded urgency rows.</div>
+
+  <div class="direction-grid">
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Direction 1A — Score Hero</h3>
+        <p>Health Score as bold gradient card hero. Overdue tasks at top in red.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d1-appbar">
+            <span class="title">My Home</span>
+            <div class="d1-avatar">JD</div>
+          </div>
+          <div class="d1-score-card">
+            <div style="font-size:10px;opacity:0.8;margin-bottom:4px;">HOME HEALTH SCORE</div>
+            <div class="d1-score-num">72</div>
+            <div class="d1-score-label">3 tasks overdue · 2 upcoming</div>
+            <div class="d1-score-bar"><div class="d1-score-bar-fill" style="width:72%"></div></div>
+          </div>
+          <div class="d1-section" style="margin-top:10px;">
+            <div class="d1-section-title">Tasks</div>
+            <div class="task-row overdue">
+              <div class="task-dot" style="background:var(--red)"></div>
+              <div class="task-info">
+                <div class="task-name">Aircon Cleaning</div>
+                <div class="task-due">Due 2 weeks ago</div>
+              </div>
+              <span class="task-chip chip-red">Overdue</span>
+            </div>
+            <div class="task-row upcoming">
+              <div class="task-dot" style="background:var(--amber)"></div>
+              <div class="task-info">
+                <div class="task-name">Pest Control</div>
+                <div class="task-due">Due in 5 days</div>
+              </div>
+              <span class="task-chip chip-amber">Soon</span>
+            </div>
+            <div class="task-row ok">
+              <div class="task-dot" style="background:var(--green)"></div>
+              <div class="task-info">
+                <div class="task-name">Plumbing Check</div>
+                <div class="task-due">Due in 45 days</div>
+              </div>
+              <span class="task-chip chip-green">OK</span>
+            </div>
+          </div>
+          <div style="height:8px"></div>
+          <div class="d1-nav">
+            <div class="nav-item active">
+              <span class="nav-icon">🏠</span>
+              <span>Home</span>
+              <div class="nav-dot"></div>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📋</span>
+              <span>Tasks</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">🔍</span>
+              <span>Vendors</span>
+            </div>
+            <div class="nav-item">
+              <span class="nav-icon">📅</span>
+              <span>Bookings</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Direction 1B — Score 100 State</h3>
+        <p>All tasks caught up. Score is full green. Celebration visual.</p>
+        <span class="badge badge-alt">Alt State</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d1-appbar">
+            <span class="title">My Home</span>
+            <div class="d1-avatar">JD</div>
+          </div>
+          <div class="d1-score-card" style="background: linear-gradient(135deg, #2E7D50 0%, var(--green) 100%);">
+            <div style="font-size:10px;opacity:0.8;margin-bottom:4px;">HOME HEALTH SCORE</div>
+            <div class="d1-score-num">100</div>
+            <div class="d1-score-label">All tasks on track ✓</div>
+            <div class="d1-score-bar"><div class="d1-score-bar-fill" style="width:100%;background:#fff"></div></div>
+          </div>
+          <div class="d1-section" style="margin-top:10px;">
+            <div class="d1-section-title">Upcoming</div>
+            <div class="task-row ok">
+              <div class="task-dot" style="background:var(--green)"></div>
+              <div class="task-info">
+                <div class="task-name">Aircon Cleaning</div>
+                <div class="task-due">Due in 32 days</div>
+              </div>
+              <span class="task-chip chip-green">OK</span>
+            </div>
+            <div class="task-row ok">
+              <div class="task-dot" style="background:var(--green)"></div>
+              <div class="task-info">
+                <div class="task-name">Pest Control</div>
+                <div class="task-due">Due in 60 days</div>
+              </div>
+              <span class="task-chip chip-green">OK</span>
+            </div>
+            <div class="task-row ok">
+              <div class="task-dot" style="background:var(--green)"></div>
+              <div class="task-info">
+                <div class="task-name">Rooftop Inspection</div>
+                <div class="task-due">Due in 90 days</div>
+              </div>
+              <span class="task-chip chip-green">OK</span>
+            </div>
+          </div>
+          <div style="height:8px"></div>
+          <div class="d1-nav">
+            <div class="nav-item active">
+              <span class="nav-icon">🏠</span><span>Home</span><div class="nav-dot"></div>
+            </div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span>Tasks</span></div>
+            <div class="nav-item"><span class="nav-icon">🔍</span><span>Vendors</span></div>
+            <div class="nav-item"><span class="nav-icon">📅</span><span>Bookings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Direction 2 — List-First Compact</h3>
+        <p>Score as a smaller inline card. More tasks visible without scrolling.</p>
+        <span class="badge badge-alt">Alternative</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d2-appbar">
+            <span class="title">Good morning, Juan 👋</span>
+            <div class="d1-avatar" style="background:var(--navy);color:#fff">JD</div>
+          </div>
+          <div class="d2-score-row">
+            <div class="d2-score-left">
+              <div class="d2-score-circle">72</div>
+              <div>
+                <div class="d2-score-text">Home Health Score</div>
+                <div class="d2-score-sub">3 tasks need attention</div>
+              </div>
+            </div>
+            <span style="font-size:16px;">→</span>
+          </div>
+          <div class="d2-filter">
+            <div class="filter-chip active">All</div>
+            <div class="filter-chip">Overdue</div>
+            <div class="filter-chip">Upcoming</div>
+            <div class="filter-chip">Done</div>
+          </div>
+          <div style="padding:0 12px;">
+            <div class="task-row overdue">
+              <div class="task-dot" style="background:var(--red)"></div>
+              <div class="task-info">
+                <div class="task-name">Aircon Cleaning</div>
+                <div class="task-due">Overdue · Quarterly</div>
+              </div>
+              <span class="task-chip chip-red">Overdue</span>
+            </div>
+            <div class="task-row overdue">
+              <div class="task-dot" style="background:var(--red)"></div>
+              <div class="task-info">
+                <div class="task-name">Septic Tank</div>
+                <div class="task-due">Overdue · Annual</div>
+              </div>
+              <span class="task-chip chip-red">Overdue</span>
+            </div>
+            <div class="task-row upcoming">
+              <div class="task-dot" style="background:var(--amber)"></div>
+              <div class="task-info">
+                <div class="task-name">Pest Control</div>
+                <div class="task-due">In 5 days · Semi-annual</div>
+              </div>
+              <span class="task-chip chip-amber">Soon</span>
+            </div>
+          </div>
+          <div style="height:8px"></div>
+          <div class="d1-nav">
+            <div class="nav-item active"><span class="nav-icon">🏠</span><span>Home</span><div class="nav-dot"></div></div>
+            <div class="nav-item"><span class="nav-icon">📋</span><span>Tasks</span></div>
+            <div class="nav-item"><span class="nav-icon">🔍</span><span>Vendors</span></div>
+            <div class="nav-item"><span class="nav-icon">📅</span><span>Bookings</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VENDOR SCREENS -->
+<div class="content hidden" id="tab-vendor">
+
+  <div class="chosen-banner">
+    <div class="icon">✅</div>
+    <div>
+      <h2>Direction Chosen: Airbnb-Style Cards + Earnings-Hero Dashboard</h2>
+      <p>Vendor browse uses horizontal card layout with photo, trust signals, and availability badge. Vendor dashboard leads with bold earnings number.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Vendor Browse + Profile + Dashboard</div>
+  <div class="section-desc">Airbnb-style card browsing with trust signals visible before tapping. Vendor dashboard leads with earnings.</div>
+
+  <div class="direction-grid">
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Vendor Browse — Card List</h3>
+        <p>Airbnb-style horizontal cards. Photo, name, services, price range, availability badge, jobs count.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d3-appbar">
+            <div class="title">Find a Vendor</div>
+            <div class="d3-appbar sub">18 vendors available</div>
+          </div>
+          <div class="d3-search">
+            <span>🔍</span>
+            <span>Search services...</span>
+          </div>
+          <div class="d3-chips">
+            <div class="filter-chip active">All</div>
+            <div class="filter-chip">Aircon</div>
+            <div class="filter-chip">Plumbing</div>
+            <div class="filter-chip">Pest Control</div>
+          </div>
+          <div class="vendor-card">
+            <div class="vendor-card-photo">
+              <span class="vendor-avail-badge badge-avail">● Available</span>
+            </div>
+            <div class="vendor-card-body">
+              <div>
+                <div class="vendor-name">Carlo Reyes</div>
+                <div class="vendor-services">Aircon · Electrical</div>
+                <div class="vendor-jobs">✓ 47 jobs completed</div>
+              </div>
+              <div class="vendor-price">
+                <div class="vendor-price-range">₱500–₱800</div>
+                <div class="vendor-price-label">per visit</div>
+              </div>
+            </div>
+            <button class="book-btn">Book Carlo</button>
+          </div>
+          <div class="vendor-card">
+            <div class="vendor-card-photo" style="background: linear-gradient(135deg, #9BA3B2, #6B7280);">
+              <span class="vendor-avail-badge badge-unavail">Unavailable</span>
+            </div>
+            <div class="vendor-card-body">
+              <div>
+                <div class="vendor-name">Maria Santos</div>
+                <div class="vendor-services">Pest Control</div>
+                <div class="vendor-jobs">✓ 12 jobs completed</div>
+              </div>
+              <div class="vendor-price">
+                <div class="vendor-price-range">₱300–₱500</div>
+                <div class="vendor-price-label">per visit</div>
+              </div>
+            </div>
+            <button class="book-btn disabled" disabled>Not available for bookings</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Vendor Profile Detail</h3>
+        <p>Airbnb-style hero photo, stats row, price section, anchored Book CTA.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d4-hero">
+            <div class="d4-back">←</div>
+            <div class="d4-avatar">CR</div>
+          </div>
+          <div class="d4-body">
+            <div class="d4-name">Carlo Reyes</div>
+            <div class="d4-services">Aircon Cleaning · Electrical Check</div>
+            <div style="display:flex;align-items:center;gap:6px;margin-top:6px;">
+              <span style="background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;">● Available</span>
+              <span style="font-size:10px;color:var(--text-sec);">Responds in ~15 min</span>
+            </div>
+            <div class="d4-stats">
+              <div class="d4-stat">
+                <div class="d4-stat-num">47</div>
+                <div class="d4-stat-label">Jobs Done</div>
+              </div>
+              <div class="d4-stat">
+                <div class="d4-stat-num">4.8★</div>
+                <div class="d4-stat-label">Rating</div>
+              </div>
+              <div class="d4-stat">
+                <div class="d4-stat-num">2 yrs</div>
+                <div class="d4-stat-label">On Platform</div>
+              </div>
+            </div>
+            <div class="d4-price-section">
+              <div class="d4-price-title">PRICE RANGE</div>
+              <div class="d4-price-val">₱500 – ₱800 per visit</div>
+            </div>
+          </div>
+          <button class="d4-cta">Book Carlo →</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Vendor Dashboard</h3>
+        <p>Earnings hero, availability toggle prominent, incoming booking card with Accept/Decline.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d5-appbar">
+            <div>
+              <div class="d5-appbar greeting">Good morning,</div>
+              <div class="d5-appbar name">Carlo Reyes</div>
+            </div>
+            <div class="d5-toggle">
+              <div class="d5-toggle-dot" style="background:var(--green)"></div>
+              <span class="d5-toggle-label">Open</span>
+            </div>
+          </div>
+          <div class="d5-earnings">
+            <div class="d5-earn-label">NET EARNED THIS MONTH</div>
+            <div class="d5-earn-num">₱12,400</div>
+            <div class="d5-earn-sub">14 jobs · ₱13,800 gross</div>
+            <div class="d5-earn-row">
+              <div class="d5-earn-stat">
+                <div class="d5-earn-stat-num">47</div>
+                <div class="d5-earn-stat-label">Total Jobs</div>
+              </div>
+              <div class="d5-earn-stat">
+                <div class="d5-earn-stat-num">₱52k</div>
+                <div class="d5-earn-stat-label">Total Earned</div>
+              </div>
+              <div class="d5-earn-stat">
+                <div class="d5-earn-stat-num">100%</div>
+                <div class="d5-earn-stat-label">Show Rate</div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:10px 12px 6px;font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.8px;">New Request</div>
+          <div class="d5-booking">
+            <div class="d5-booking-header">
+              <div>
+                <div class="d5-booking-service">Aircon Cleaning</div>
+                <div class="d5-booking-date">📅 March 8 · Juan D.</div>
+              </div>
+              <span style="background:#FEF3DC;color:#B07400;font-size:9px;font-weight:700;padding:2px 8px;border-radius:20px;">New</span>
+            </div>
+            <div class="d5-booking-actions">
+              <button class="btn-accept">✓ Accept</button>
+              <button class="btn-decline">✕ Decline</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOOKING FLOW -->
+<div class="content hidden" id="tab-booking">
+
+  <div class="chosen-banner">
+    <div class="icon">✅</div>
+    <div>
+      <h2>Direction Chosen: Step Indicator + Real-Time Status</h2>
+      <p>Linear stepper (Requested → Confirmed → In Progress → Completed) with Supabase Realtime updates. No polling, no manual refresh.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Booking Status Tracker</div>
+  <div class="section-desc">Real-time 4-step stepper. Homeowner triggers "In Progress." Vendor marks complete and enters final price.</div>
+
+  <div class="direction-grid">
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Booking Status — Confirmed State</h3>
+        <p>Vendor accepted. Homeowner sees Confirmed step active. "Vendor is here" CTA and no-show option visible.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d6-appbar">
+            <span>←</span>
+            <span class="title">Booking #1042</span>
+          </div>
+          <div class="d6-vendor-row">
+            <div class="d6-vendor-photo">CR</div>
+            <div>
+              <div class="d6-vendor-name">Carlo Reyes</div>
+              <div class="d6-vendor-service">Aircon Cleaning · March 8</div>
+            </div>
+          </div>
+          <div class="d6-stepper">
+            <div class="step-row">
+              <div class="step-icon-col">
+                <div class="step-circle step-done">✓</div>
+                <div class="step-line done"></div>
+              </div>
+              <div class="step-content">
+                <div class="step-label" style="color:var(--green)">Requested</div>
+                <div class="step-sublabel">Mar 5 · 2:14 PM</div>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-icon-col">
+                <div class="step-circle step-active">✓</div>
+                <div class="step-line"></div>
+              </div>
+              <div class="step-content">
+                <div class="step-label" style="color:var(--blue)">Confirmed</div>
+                <div class="step-sublabel">Carlo accepted · Contact: 0917-XXX</div>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-icon-col">
+                <div class="step-circle step-pending">3</div>
+                <div class="step-line"></div>
+              </div>
+              <div class="step-content">
+                <div class="step-label">In Progress</div>
+                <div class="step-sublabel">Tap when vendor arrives</div>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-icon-col">
+                <div class="step-circle step-pending">4</div>
+              </div>
+              <div class="step-content">
+                <div class="step-label">Completed</div>
+                <div class="step-sublabel">Payment will appear here</div>
+              </div>
+            </div>
+          </div>
+          <button class="d6-action">Vendor is here →</button>
+          <button class="d6-noshow">Vendor didn't show up</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>Payment Screen — Completed State</h3>
+        <p>Vendor submitted ₱650 final price. QRPH + GCash deep link shown. "I've Paid" closes the job.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d6-appbar">
+            <span>←</span>
+            <span class="title">Payment</span>
+          </div>
+          <div style="padding:16px;text-align:center;">
+            <div style="font-size:11px;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Amount Due</div>
+            <div style="font-size:40px;font-weight:800;color:var(--navy);">₱650</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-bottom:16px;">Aircon Cleaning · Carlo Reyes</div>
+            <div style="width:120px;height:120px;background:var(--divider);border-radius:12px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-sec);">QRPH Code</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-bottom:16px;">Scan the QR code or tap GCash</div>
+            <button style="background:var(--blue);color:#fff;border:none;border-radius:12px;padding:14px;width:100%;font-size:13px;font-weight:700;margin-bottom:8px;cursor:pointer;">Pay via GCash →</button>
+            <button style="background:var(--green);color:#fff;border:none;border-radius:12px;padding:14px;width:100%;font-size:13px;font-weight:700;cursor:pointer;">I've Paid ✓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="direction-card">
+      <div class="direction-label">
+        <h3>No-Show Report Screen</h3>
+        <p>Vendor didn't show up. Confirm no-show → vendor suspended → alternatives shown immediately.</p>
+        <span class="badge badge-recommended">★ Recommended</span>
+      </div>
+      <div class="phone-pad">
+        <div class="phone">
+          <div class="d6-appbar" style="background:var(--red);">
+            <span>←</span>
+            <span class="title">No-Show Report</span>
+          </div>
+          <div style="padding:20px 16px;text-align:center;">
+            <div style="font-size:32px;margin-bottom:12px;">😔</div>
+            <div style="font-size:14px;font-weight:800;color:var(--text);margin-bottom:8px;">Sorry about that.</div>
+            <div style="font-size:12px;color:var(--text-sec);margin-bottom:20px;line-height:1.5;">Carlo Reyes has been removed from the platform. Let's find you another vendor.</div>
+            <div style="background:var(--bg);border-radius:12px;padding:12px;margin-bottom:16px;border:1px solid var(--divider);">
+              <div style="font-size:11px;color:var(--text-sec);margin-bottom:6px;">Suggested Alternative</div>
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                  <div style="font-size:12px;font-weight:700;color:var(--text);">Maria Santos</div>
+                  <div style="font-size:10px;color:var(--text-sec);">Aircon · ₱400–₱600</div>
+                  <div style="font-size:10px;color:var(--green);">● Available now</div>
+                </div>
+                <button style="background:var(--blue);color:#fff;border:none;border-radius:8px;padding:8px 14px;font-size:11px;font-weight:700;cursor:pointer;">Book</button>
+              </div>
+            </div>
+            <button style="background:var(--navy);color:#fff;border:none;border-radius:12px;padding:12px;width:100%;font-size:12px;font-weight:700;cursor:pointer;">Browse All Vendors →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showTab(id) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[id^="tab-"]').forEach(c => c.classList.add('hidden'));
+  document.getElementById('tab-' + id).classList.remove('hidden');
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>
