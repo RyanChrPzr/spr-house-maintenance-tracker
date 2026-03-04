@@ -26,8 +26,15 @@ Future<void> main() async {
     sound: true,
   );
 
-  runApp(const ProviderScope(child: MyApp()));
+  runApp(buildApp());
 }
+
+/// Returns the root widget for the app.
+///
+/// Exposed for integration tests: `await tester.pumpWidget(app.buildApp())`
+/// re-creates the widget tree without re-initialising Supabase/Firebase,
+/// which simulates a cold-start relaunch for session-persistence tests.
+Widget buildApp() => const ProviderScope(child: MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
