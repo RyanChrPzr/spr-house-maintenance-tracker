@@ -1,0 +1,71 @@
+# =========================
+
+# BMAD / AI Tooling
+
+# =========================
+
+# Ignore personal Claude config (remove this if your whole team uses it)
+
+#.claude/
+
+# =========================
+
+# Environment Files
+
+# =========================
+
+.env
+.env.*
+*.local
+
+# =========================
+
+# Node (if any frontend/tools exist)
+
+# =========================
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+
+# .NET (if backend exists)
+
+# =========================
+
+bin/
+obj/
+.vs/
+*.user
+*.suo
+
+# =========================
+
+# OS Files
+
+# =========================
+
+.DS_Store
+Thumbs.db
+
+# =========================
+
+# Logs
+
+# =========================
+
+logs/
+*.log
+
+# =========================
+
+# Temporary / Cache
+
+# =========================
+
+.cache/
+dist/
+build/
