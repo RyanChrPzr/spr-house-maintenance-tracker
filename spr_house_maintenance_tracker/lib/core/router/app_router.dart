@@ -3,6 +3,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/register_screen.dart';
 import '../../features/auth/presentation/screens/role_selection_screen.dart';
+import '../../features/vendor/presentation/screens/vendor_onboarding_screen.dart';
+import '../../features/vendor/presentation/screens/vendor_profile_setup_screen.dart';
+import '../../features/booking/presentation/screens/vendor_profile_screen.dart';
 import '../../features/homeowner/presentation/homeowner_dashboard_screen.dart';
 import '../../features/vendor/presentation/vendor_dashboard_screen.dart';
 
@@ -65,7 +68,24 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomeownerDashboardScreen(),
     ),
     GoRoute(
+      path: '/homeowner/vendor/:vendorId',
+      builder: (context, state) => VendorProfileScreen(
+        vendorId: state.pathParameters['vendorId']!,
+      ),
+    ),
+    GoRoute(
       path: '/vendor',
+      builder: (context, state) => const VendorOnboardingScreen(),
+    ),
+    GoRoute(
+      path: '/vendor/profile-setup',
+      builder: (context, state) => const VendorProfileSetupScreen(),
+    ),
+    GoRoute(
+      path: '/vendor/dashboard',
+      builder: (context, state) => const Scaffold(
+        body: Center(child: Text('Vendor Dashboard — Story 5.x')),
+      ),
       builder: (context, state) => const VendorDashboardScreen(),
     ),
   ],
